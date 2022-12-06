@@ -23,5 +23,5 @@
 经纬度可以用 https://api.map.baidu.com/lbsapi/getpoint/ 来获取
 
 ## 使用
-运行**local_clock.py**
+运行**local_clock.py**   
 week_diary中可以添加周报的内容,里面有默认配置
