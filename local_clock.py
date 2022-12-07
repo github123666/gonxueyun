@@ -1,10 +1,11 @@
-import copy
-import requests
-import json
-import hashlib
-import time
-import random
 import calendar
+import copy
+import hashlib
+import json
+import random
+import time
+
+import requests
 from aes_pkcs5.algorithms.aes_ecb_pkcs5_padding import AESECBPKCS5Padding
 
 """
@@ -24,7 +25,6 @@ headers = {
 
 with open('./basic_info/user.txt', 'r', encoding='utf-8') as f:
     user_info = f.read()
-    print(user_info)
     user_info_json = json.loads(user_info)
     phone = user_info_json['phone']
     password = user_info_json['password']
@@ -181,7 +181,7 @@ def submit_week(url, plan_id, user_id):
     week_sign = user_id + "week" + plan_id + "周报" + "3478cbbc33f84bd00d75d7dfa69e0daa"
     if remedy:
         # 补交周报
-        not_submit_week = weeks[:requirement_week_num+1]
+        not_submit_week = weeks[:requirement_week_num + 1]
         not_submit_week.reverse()
         for i in not_submit_week:
             time.sleep(30)
@@ -243,33 +243,62 @@ def get_plan(url, user_id):
         'state': ''
     }
     rsp = requests.post(url="https://api.moguding.net:9000/" + url, headers=headers, data=json.dumps(data)).json()
+    if rsp.get("code") > 400:
+        print(rsp)
     data = rsp["data"][0]
     plan_id = data["planId"]
-    # 早晚打卡
+    # 早晚打卡,判断是否为设置的打卡时间
     if time.strftime("%H", time.localtime()) == start_time:
         clock_in("attendence/clock/v2/save", plan_id, user_id, "START")
     elif time.strftime("%H", time.localtime()) == end_time:
         clock_in("attendence/clock/v2/save", plan_id, user_id, "END")
+    else:
+        print("还没到打卡时间,请修改配置参数")
+
+
+def save_token():
+    """
+    将token和userid存到配置文件中
+    :return:
+    """
+    with open("./basic_info/user.txt", 'w', encoding="utf-8") as file:
+        file.write(json.dumps(user_info_json))
 
 
 def main(log_url):
-    # 对数据加密
-    data = {
-        "phone": aes_encrypt(phone),
-        "password": aes_encrypt(password),
-        "t": aes_encrypt(int(time.time() * 1000)),
-        "loginType": "android",
-        "uuid": "",
-    }
-    print(data)
-    # 提取userid 加密sign
-    rsp = requests.post(url=log_url, headers=headers, data=json.dumps(data)).json()
-    print(rsp["msg"])
-    data = rsp["data"]
-    user_id = data["userId"]
-    plan_sign = user_id + "student" + "3478cbbc33f84bd00d75d7dfa69e0daa"
-    headers.update({"authorization": data["token"], "rolekey": "student", 'sign': md5_encrypt(plan_sign)})
-    get_plan('practice/plan/v3/getPlanByStu', user_id)
+    auto_login = user_info_json.get("token")
+    if not auto_login:
+        # 请求体
+        print('手动登录')
+        data = {
+            "phone": aes_encrypt(phone),
+            "password": aes_encrypt(password),
+            "t": aes_encrypt(int(time.time() * 1000)),
+            "loginType": "android",
+            "uuid": "",
+        }
+        rsp = requests.post(url=log_url, headers=headers, data=json.dumps(data)).json()
+        data = rsp["data"]
+        token = data["token"]
+        user_id = data["userId"]
+        user_info_json.setdefault("token", token)
+        user_info_json.setdefault("user_id", user_id)
+        # 保存token
+        save_token()
+        plan_sign = user_id + "student" + "3478cbbc33f84bd00d75d7dfa69e0daa"
+        headers.update({"authorization": token, "rolekey": "student", 'sign': md5_encrypt(plan_sign)})
+        get_plan('practice/plan/v3/getPlanByStu', user_id)
+    else:
+        # 提取userid 加密sign
+        print('自动登录')
+        user_id = user_info_json["user_id"]
+        plan_sign = user_id + "student" + "3478cbbc33f84bd00d75d7dfa69e0daa"
+        headers.update({"authorization": user_info_json["token"], "rolekey": "student", 'sign': md5_encrypt(plan_sign)})
+        try:
+            get_plan('practice/plan/v3/getPlanByStu', user_id)
+        except Exception:
+            user_info_json.pop("token")
+            main(url)
 
 
 if __name__ == '__main__':
