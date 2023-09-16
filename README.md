@@ -1,24 +1,29 @@
+```
 工学云&蘑菇钉支持任意地区打卡，周报提交,本月打卡补签,周报补交。
 ```
-**2023-9-16**
+**2023-9-16**  （对称加密的密钥居然还没改）
+**答主打卡已经结束,不想改之前写的"史"了可以提供一些，目前技术上的帮助**
 1. 目前好像改一下代码中的sign就可以用
 2. 打卡的sign好像还是没变
-3. 变的sign
-**title是写报告标题**
-    周报sign解密
-        **title 可以自己随便填**
-        title = '第一周'
+3. 改变的sign
+**title是写报告时标题**
+
+    <1> **周报**sign解密    
+        title 可以自己随便填   
+        title = '第一周'   
         week_sign = user_id + "week" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"
-    日报 sign 解密
-       ** title 可以自己随便填**
-        title = '第一周'
+    
+   <2> **日报** sign 解密   
+       title 可以自己随便填    
+        title = '第一周'    
         week_sign = user_id + "day" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"
-    月报 sign 解密
-        ** title 可以自己随便填**
-        title = '第一周'
-        week_sign = user_id + "mouth" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"
-**2022-12-7**
-    新增自动登录
+   
+    <3> **月报** sign 解密   
+        title 可以自己随便填   
+        title = '第一周'  
+        week_sign = user_id + "mouth" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"  
+**2022-12-7**    
+       新增自动登录
 ## 下载配置
 先将文件下载到本地，执行pip install -r requirement.txt安装需要的库  
 
