@@ -12,17 +12,17 @@
     <1> **周报**sign解密    
         title 可以自己随便填   
         title = '第一周'   
-        week_sign = user_id + "week" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"
+        week_sign = user_id + "week" + plan_id + title + "3478cbbc33f84bd00d75d7dfa69e0daa"
     
    <2> **日报** sign 解密   
        title 可以自己随便填    
         title = '第一周'    
-        week_sign = user_id + "day" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"
+        week_sign = user_id + "day" + plan_id + title + "3478cbbc33f84bd00d75d7dfa69e0daa"
    
     <3> **月报** sign 解密   
         title 可以自己随便填   
         title = '第一周'  
-        week_sign = user_id + "mouth" + plan_id + {title} + "3478cbbc33f84bd00d75d7dfa69e0daa"  
+        week_sign = user_id + "mouth" + plan_id + title + "3478cbbc33f84bd00d75d7dfa69e0daa"  
 **2022-12-7**    
        新增自动登录
 ## 下载配置
