@@ -7,5 +7,6 @@
   "start_time": "08",
   "end_time": "21",
   "city": "\u66f9\u53bf",
-  "province": "\u5c71\u4e1c\u7701"
+  "province": "\u5c71\u4e1c\u7701",
+  "is_repeat_clock_in": false
 }
