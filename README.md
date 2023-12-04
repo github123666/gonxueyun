@@ -30,7 +30,7 @@ post请求参数可能对不上(但是加密没变),代码仅供参考
     <3> **月报** sign 解密   
         title 可以自己随便填   
         title = '第一周'  
-        week_sign = user_id + "mouth" + plan_id + title + "3478cbbc33f84bd00d75d7dfa69e0daa"  
+        week_sign = user_id + "month" + plan_id + title + "3478cbbc33f84bd00d75d7dfa69e0daa"  
 **2022-12-7**    
        新增自动登录
 ## 下载配置
