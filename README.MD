@@ -11,7 +11,9 @@
 - [x] 运行和调试本项目则表示为默认同意以上声明
 
 ## 基本使用
-
+```
+pip install -r requirements.txt
+```
 > 配置 user_config.json 文件
 
 ```angular2html
