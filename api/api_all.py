@@ -169,7 +169,7 @@ def get_previous_month_data(user_login_info):
     # clock in count
     day_set = count_day(rsp)
     # 上个月能打卡的天数
-    previous_day = set([day for day in range(calendar.monthrange(year, previous_month)[1])][-(31 - now_day):])
+    previous_day = set([day for day in range(1, calendar.monthrange(year, previous_month)[1] + 1)][-(31 - now_day):])
     # 未打卡日期
     empty_day = day_set ^ previous_day
     api_module_log.info("上月补签阻塞3~15秒")
@@ -200,9 +200,9 @@ def get_attendance_log(user_login_info):
     handle_response(rsp)
     # save token
     save_token(user_login_info)
-    # handle text
+    # handle response text
     day_set = count_day(dict(rsp))
-    empty_day = day_set ^ set(range(1, now_day + 1))
+    empty_day = day_set ^ set(range(1, now_day))
     # repeat clock in
     api_module_log.info("本月补签阻塞3~15秒")
     for day in empty_day:
@@ -215,6 +215,25 @@ def get_attendance_log(user_login_info):
         get_previous_month_data(user_login_info)
     # save token
     save_token(user_login_info)
+
+
+# submit weekly
+def submit_weekly(user_login_info):
+    pass
+
+
+@repeat_api
+def submit_daily(user_login_info, daily):
+    api_module_log.info('提交日报')
+    url = 'practice/paper/v2/save'
+    headers['sign'] = create_sign(user_login_info.user_id, "day", user_login_info.plan_id, "日报")
+    data = {"yearmonth": "", "address": "", "t": aes_encrypt(int(time.time() * 1000)), "title": "日报",
+            "longitude": "0.0",
+            "latitude": "0.0", "planId": "5e4cda2cab725f3c60d46c2dae3740bd", "reportType": "day",
+            "content": daily.get_daily()['data']}
+    print(data)
+    print('')
+    rsp = requests.post()
 
 
 # check response
