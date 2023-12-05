@@ -171,8 +171,11 @@ def get_previous_month_data(user_login_info):
     # 上个月能打卡的天数
     previous_day = set([day for day in range(1, calendar.monthrange(year, previous_month)[1] + 1)][-(31 - now_day):])
     # 未打卡日期
-    empty_day = day_set ^ previous_day
-    api_module_log.info("上月补签阻塞3~15秒")
+    empty_day = []
+    for day in previous_day:
+        if day not in day_set:
+            empty_day.append(day)
+    api_module_log.info("上月补签阻塞3~15秒后打卡")
     for day in empty_day:
         time.sleep(random.randint(3, 15))
         api_module_log.info(f'补签:{previous_month}-{day}')
@@ -204,7 +207,7 @@ def get_attendance_log(user_login_info):
     day_set = count_day(dict(rsp))
     empty_day = day_set ^ set(range(1, now_day))
     # repeat clock in
-    api_module_log.info("本月补签阻塞3~15秒")
+    api_module_log.info("本月补签阻塞3~15秒后打卡")
     for day in empty_day:
         time.sleep(random.randint(3, 15))
         api_module_log.info(f'补签:{now_month}-{day}')
