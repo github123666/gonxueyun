@@ -12,3 +12,5 @@ def aes_encrypt(data) -> str:
     text_encrypt = encrypt_type.encrypt(str(data))
     return text_encrypt
 
+if __name__ == '__main__':
+    print(aes_encrypt('103817552'))

@@ -41,12 +41,19 @@ def repeat_api(func):
     @wraps(func)
     def repeat(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         except SimpleError as e:
             api_module_log.error(e)
-            get_token_userid(*args, **kwargs)
+            # refresh token
+            get_token_userid(*args)
             api_module_log.info('token 刷新成功')
-            func(*args)
+            # save token
+            save_token(*args)
+            return func(*args, **kwargs)
+        except requests.exceptions.SSLError as r:
+            api_module_log.error('请关闭代理,或当前ip已经被deny(拉黑了)')
+            api_module_log.info("程序已退出")
+            exit(-1)
 
     return repeat
 
@@ -83,8 +90,6 @@ def get_plan(user_login_info) -> None:
     # response success
     plan_id = rsp["data"][0]['planId']
     user_login_info.plan_id = plan_id
-    # save plan id
-    user_login_info.to_save_local(user_login_info.__dict__)
 
 
 @repeat_api
@@ -120,8 +125,6 @@ def clock_in(user_login_info) -> None:
     headers['authorization'] = user_login_info.token
     rsp = requests.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
-    # save token
-    save_token(user_login_info)
 
 
 @repeat_api
@@ -211,32 +214,67 @@ def get_attendance_log(user_login_info):
     for day in empty_day:
         time.sleep(random.randint(3, 15))
         api_module_log.info(f'补签:{now_month}-{day}')
-        day = '0' + day if 10 > day else day
+        day = '0' + str(day) if 10 > day else day
         repeat_clock_in(user_login_info, date=f'{year}-{now_month}-{day} ')
     # day > 30
     if 31 - now_day > 0:
         get_previous_month_data(user_login_info)
-    # save token
-    save_token(user_login_info)
-
-
-# submit weekly
-def submit_weekly(user_login_info):
-    pass
 
 
 @repeat_api
-def submit_daily(user_login_info, daily):
+# submit log
+def submit_log(user_login_info) -> dict:
+    url = 'statistics/stu/practice/v1/find'
+    data = {"t": aes_encrypt(int(time.time() * 1000)), "planId": user_login_info.plan_id}
+    # update token
+    headers['authorization'] = user_login_info.token
+    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    handle_response(rsp)
+    api_module_log.info("获取提交记录成功")
+    return rsp['data']
+
+
+# get weeks
+def get_weeks_date(user_login_info) -> dict:
+    url = 'practice/paper/v1/getWeeks1'
+    data = {'planId': user_login_info.plan_id}
+    headers['sign'] = ''
+    headers['authorization'] = user_login_info.token
+    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    handle_response(rsp)
+    api_module_log.info('获取一年内周报日期成功')
+    return rsp
+
+
+@repeat_api
+# submit weekly
+def submit_weekly(user_login_info, week, weekly):
+    url = "practice/paper/v2/save"
+    data = {"yearmonth": "", "address": "", "title": "周报", "longitude": "0.0", "latitude": "0.0",
+            "weeks": f"第{week['weeks']}周",
+            "endTime": week["endTime"], "startTime": week["startTime"],
+            "planId": user_login_info.plan_id, "reportType": "week", "content": weekly, "attachments": "",
+            }
+    headers['authorization'] = user_login_info.token
+    headers['sign'] = create_sign(user_login_info.user_id, "week", user_login_info.plan_id, '周报')
+    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    handle_response(rsp)
+
+
+@repeat_api
+def submit_daily(user_login_info, daily, day):
     api_module_log.info('提交日报')
     url = 'practice/paper/v2/save'
-    headers['sign'] = create_sign(user_login_info.user_id, "day", user_login_info.plan_id, "日报")
-    data = {"yearmonth": "", "address": "", "t": aes_encrypt(int(time.time() * 1000)), "title": "日报",
+    title = f"第{day}天日报"
+    headers['sign'] = create_sign(user_login_info.user_id, "day", user_login_info.plan_id, title)
+    # update token
+    headers['authorization'] = user_login_info.token
+    data = {"yearmonth": "", "address": "", "t": aes_encrypt(int(time.time() * 1000)), "title": title,
             "longitude": "0.0",
-            "latitude": "0.0", "planId": "5e4cda2cab725f3c60d46c2dae3740bd", "reportType": "day",
+            "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "day",
             "content": daily.get_daily()['data']}
-    print(data)
-    print('')
-    rsp = requests.post()
+    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    handle_response(rsp)
 
 
 # check response
@@ -244,8 +282,8 @@ def handle_response(rsp: dict) -> None:
     response_code = rsp['code']
     if response_code == 401:
         raise SimpleError(f"token expire {rsp}")
-    elif response_code == 200:
-        api_module_log.info(f"成功:{rsp}")
+    elif response_code <= 300:
+        api_module_log.info(f"成功: {rsp}")
     else:
         api_module_log.info(f'请检测请求带的参数或发送issues 错误信息:{rsp}')
         api_module_log.info("其他错误,已退出")

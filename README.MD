@@ -11,9 +11,7 @@
 - [x] 运行和调试本项目则表示为默认同意以上声明
 
 ## 基本使用
-```
-pip install -r requirements.txt
-```
+
 > 配置 user_config.json 文件
 
 ```angular2html
@@ -28,9 +26,8 @@ pip install -r requirements.txt
 "province": "山东省",
 "is_repeat_clock_in": false \\ 默认不补签
 ```
-运行 main.py 文件
 
 ## **补签说明**：
 1. 默认补签前30天的数据(只能补签到前30天的)
 2. 默认只补签上班(app默认只支持上班,保存和app统一原则),若学校有要求只需要修改请求的type改END,变成打下班卡
-3. 补签时间说明,默认是早上8或9点随机时间,随机秒打卡,若修改则自行看请求代码
+3. 补签时间说明,默认是早上8或9点随机时间,随机秒打卡,若修改则自行修改

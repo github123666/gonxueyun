@@ -1,9 +1,16 @@
 import json
 import logging
 import os
+import time
 
-from api.api_all import get_token_userid, get_plan, clock_in, get_attendance_log
+from api.api_all import get_token_userid, get_plan, clock_in, get_attendance_log, submit_daily, get_weeks_date, \
+    submit_weekly, submit_log
 from config.info import Info
+from textHandle.get_daily import Daily
+from textHandle.get_weekly import Weekly
+from textHandle.handle_weeks_date import WeeksDate
+from textHandle.submitTime import SubmitTime
+from util.tomorrow import tomorrow_1_clock, next_week_submit_time
 
 # print log config
 logging.basicConfig(format="[%(asctime)s] %(name)s %(levelname)s: %(message)s", level=logging.INFO,
@@ -14,19 +21,25 @@ config_file = "./user_config.json"
 path = os.path.dirname(__file__)
 
 
-# get info login info
+# get daily file
+def load_daily_file() -> Daily:
+    with open(os.path.join(path, r'textFile\daily.json'), 'r', encoding="UTF-8") as f:
+        daily = json.load(f)
+    return Daily(daily)
+
+
+# load local file
+def load_weekly_file() -> Weekly:
+    with open(os.path.join(path, 'textFile/weekly.json'), 'r', encoding="UTf-8") as f:
+        weekly = json.load(f)
+    return Weekly(weekly)
+
+
+# load login info
 def load_login_info() -> Info:
     with open(config_file, encoding="utf-8") as f:
         user_info = json.load(f)
     return Info(user_info, os.path.join(path, 'user_config.json'))
-
-
-# save token
-def save_token_user_id(config: Info, token: str, user_id) -> None:
-    config.token = token
-    config.user_id = user_id
-    with open(config_file, 'w', encoding="UTF_8") as f:
-        f.write(str(json.dumps(config.__dict__)))
 
 
 def login(user_login_info: Info) -> None:
@@ -41,6 +54,7 @@ def login(user_login_info: Info) -> None:
         main_module_log.info("使用本地token")
 
 
+# get plan
 def plan_id(user_login_info: Info) -> None:
     # get plan
     if not user_login_info.plan_id:
@@ -48,6 +62,10 @@ def plan_id(user_login_info: Info) -> None:
         get_plan(user_login_info)
     else:
         main_module_log.info("使用本地plan id")
+
+
+def load_weeks_info(data) -> WeeksDate:
+    return WeeksDate(data)
 
 
 def run():
@@ -59,11 +77,60 @@ def run():
     login(user_login_info)
     # get plan_id
     plan_id(user_login_info)
+    # get submit log
+    main_module_log.info('获取提交记录')
+    submit_all = submit_log(user_login_info)
     # clock in
+    main_module_log.info("启动打卡")
     clock_in(user_login_info)
     # repeat clock in
-    main_module_log.info("开始补签")
-    get_attendance_log(user_login_info)
+    if user_login_info.is_repeat_clock_in:
+        main_module_log.info("开始补签")
+        get_attendance_log(user_login_info)
+    # get local file
+    # get submit time
+    submit_time = SubmitTime(path)
+    # submit daily
+    if user_login_info.is_submit_daily:
+        main_module_log.info("判断今天是否提交日报")
+        if not submit_time.daily_next_submit_Time or int(time.time()) > submit_time.daily_next_submit_Time:
+            main_module_log.info('载入日报文件')
+            daily = load_daily_file()
+            main_module_log.info('载入成功')
+            main_module_log.info("提交日报")
+            submit_daily(user_login_info, daily=daily, day=submit_all['dayReportNum'])
+            # set next submit time
+            submit_time.daily_next_submit_Time = tomorrow_1_clock()
+            submit_time.to_save_local()
+        else:
+            main_module_log.error("今天已提交日报了,不会重复提交")
+
+    # submit weekly
+    # is user config week
+    now_week = int(time.strftime("%w", time.localtime())) + 1
+    if now_week == user_login_info.submit_weekly_time:
+        if user_login_info.is_submit_weekly:
+            main_module_log.info('判断今天是否提交过周报')
+            if not submit_time.weekly_next_submit_Time or int(time.time()) > submit_time.weekly_next_submit_Time:
+                weeks_dict = get_weeks_date(user_login_info)
+                weeks_date = load_weeks_info(weeks_dict)
+                now_week = weeks_date.get_now_week_date()
+                main_module_log.info("从本地文件获取周报")
+                weekly = load_weekly_file()
+                main_module_log.info("开始提交周报")
+                #
+                weeks = submit_all['weekReportNum']
+                main_module_log.info(f'提交第{weeks}周周报')
+                # add weeks
+                now_week['weeks'] = weeks
+                submit_weekly(user_login_info, week=now_week, weekly=weekly.get_now_weekly(weeks))
+                # set next submit time
+                submit_time.weekly_next_submit_Time = next_week_submit_time()
+                submit_time.to_save_local()
+            else:
+                main_module_log.error('已提交周报，不会重复提交')
+    else:
+        main_module_log.info("未到提交周报时间")
 
 
 if __name__ == '__main__':
