@@ -15,8 +15,9 @@
 - [x] 运行和调试本项目则表示为默认同意以上声明
 
 ## 基本使用
+>1.pip install -r requirements.txt   
 
-> 配置 user_config.json 文件
+>2.配置 user_config.json 文件
 
 ```angular2html
 "password": "li hua", \\ 密码
@@ -45,3 +46,5 @@
 某讯和某里的云服务器大概率不行(deny了)     
 有条件上**树莓派**挂寝室里   
 没条件买**挂机宝**，**云手机**也可以 
+## start
+[![Stargazers over time](https://starchart.cc/github123666/gonxueyun.svg)](https://starchart.cc/github123666/gonxueyun)
