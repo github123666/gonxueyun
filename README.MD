@@ -1,8 +1,9 @@
 ## 当前功能
 ## 有问题issues
 **2023-12-11**
-+ 修改bug
-+ 完善日报和周报
++ 1修改bug
++ 2完善日报和周报
++ 3新增提交月报
 
 **2023-12-9**  
 + 1 新增提交日报
@@ -37,7 +38,9 @@
 "is_repeat_clock_in": false \\ 默认不补签
 "is_submit_daily": false, \\ 默认不提交日报
 "is_submit_weekly": false,\\ 默认不提交周报
-"submit_weekly_time": 1 \\ 星期几提交周报
+"submit_weekly_time": 1 ,\\ 星期几提交周报
+"submit_month_report_time": 1 \\ 每个月的几号提交月报
+
 ```
 最后**运行main.py**
 
