@@ -1,3 +1,4 @@
-a = {1,2,3}
-a.discard(3)
+import random
+a = [{i: 0} for i in range(10)]
 print(a)
+print(random.choice(a))

@@ -4,13 +4,14 @@ import os
 import time
 
 from api.api_all import get_token_userid, get_plan, clock_in, get_attendance_log, submit_daily, get_weeks_date, \
-    submit_weekly, submit_log
+    submit_weekly, submit_log, submit_month_report
 from config.info import Info
 from textHandle.get_daily import Daily
+from textHandle.get_month_report import MonthReport
 from textHandle.get_weekly import Weekly
 from textHandle.handle_weeks_date import WeeksDate
 from textHandle.submitTime import SubmitTime
-from util.tomorrow import tomorrow_1_clock, next_week_submit_time
+from util.tomorrow import tomorrow_1_clock, next_week_submit_time,next_submit_month_time
 
 # print log config
 logging.basicConfig(format="[%(asctime)s] %(name)s %(levelname)s: %(message)s", level=logging.INFO,
@@ -36,9 +37,9 @@ def load_weekly_file() -> Weekly:
 
 
 # load local file
-def load_month_report():
-    with open(os.path.join(path, 'textFile/weekly.json'), 'r', encoding="UTf-8") as f:
-        pass
+def load_month_report() -> MonthReport:
+    with open(os.path.join(path, 'textFile/month_report.json'), 'r', encoding="UTf-8") as f:
+        return MonthReport(json.load(f))
 
 
 # load login info
@@ -139,11 +140,22 @@ def run():
     else:
         main_module_log.info("未到提交周报时间")
     # submit month report
-    day = int(time.strftime("%d", time.localtime()))
+    date = time.localtime()
+    day = date.tm_mday
+    # is user set time
     if day == user_login_info.submit_month_report_time:
-        main_module_log.info("开始提交月报")
-        main_module_log.info('读取月报内容.....')
-        pass
+        # is submit month report
+        if submit_time.month_next_submit_Report == "" or int(time.time()) > submit_time.month_next_submit_Report:
+            main_module_log.info('读取月报内容.....')
+            month_report = load_month_report()
+            main_module_log.info("开始提交月报")
+            submit_month_report(user_login_info, date=date, month_report=month_report.get_month_report())
+            submit_time.month_next_submit_Report = next_submit_month_time()
+            # sava local file
+            submit_time.to_save_local()
+        else:
+            main_module_log.info('今天已提交月报,不在重复提交')
+
     else:
         main_module_log.info("未到提交月报时间")
 
