@@ -36,6 +36,13 @@ def save_token(user_login_info):
     user_login_info.to_save_local(user_login_info.__dict__)
 
 
+# special case
+def special_code(func, response):
+    if response['code'] == 500:
+        response['code'] = 200
+    func(response)
+
+
 # repeat
 def repeat_api(func):
     @wraps(func)
@@ -258,10 +265,12 @@ def submit_weekly(user_login_info, week, weekly):
     headers['authorization'] = user_login_info.token
     headers['sign'] = create_sign(user_login_info.user_id, "week", user_login_info.plan_id, '周报')
     rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
-    handle_response(rsp)
+    # code equal 500 is allow
+    special_code(handle_response, rsp)
 
 
 @repeat_api
+# submit daily
 def submit_daily(user_login_info, daily, day):
     api_module_log.info('提交日报')
     url = 'practice/paper/v2/save'
@@ -274,7 +283,13 @@ def submit_daily(user_login_info, daily, day):
             "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "day",
             "content": daily.get_daily()['data']}
     rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
-    handle_response(rsp)
+    # code equal 500 is allow
+    special_code(handle_response, rsp)
+
+
+# submit month report
+def submit_month_report(user_login_info):
+    pass
 
 
 # check response

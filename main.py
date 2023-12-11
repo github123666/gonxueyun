@@ -107,7 +107,8 @@ def run():
 
     # submit weekly
     # is user config week
-    now_week = int(time.strftime("%w", time.localtime())) + 1
+    now_week = int(time.strftime("%w", time.localtime()))
+    now_week = now_week if now_week != 0 else 7
     if now_week == user_login_info.submit_weekly_time:
         if user_login_info.is_submit_weekly:
             main_module_log.info('判断今天是否提交过周报')

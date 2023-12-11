@@ -1,15 +1,1 @@
-{
-    "password": "li hua",
-    "phone": "1010101010010101",
-    "address": "山东菏泽市曹县蔡徐村",
-    "latitude": "34.830624",
-    "longitude": "115.545005",
-    "start_time": "11",
-    "end_time": "21",
-    "city": "\u66f9\u53bf",
-    "province": "\u5c71\u4e1c\u7701",
-    "is_repeat_clock_in": false,
-    "is_submit_daily": false,
-    "is_submit_weekly": false,
-    "submit_weekly_time": 1
-}
+{"password": "14yhl9TTt", "phone": "13797424039", "address": "\u5c71\u4e1c\u83cf\u6cfd\u66f9\u53bf", "latitude": "34.830624", "longitude": "115.545005", "start_time": "11", "end_time": "21", "token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJtb2d1ZGluZy11c2VyIiwic3ViIjoie1wibG9naW5UeXBlXCI6XCJhbmRyb2lkXCIsXCJ1c2VySWRcIjoxMDM4MTc1NTJ9IiwiYXVkIjoibW9ndWRpbmciLCJleHAiOjIwMTc3NDE0MTAsIm5iZiI6MTcwMjEyMTMxMCwiaWF0IjoxNzAyMTIyMjEwfQ.cIPHfPayUNYjZ-nYReyZzp9Oqu7820HCF9n8w3UezZC8hjk61tid059WPZF455c8dbpSFvNr2tRcuPXopP89HA", "user_id": "103817552", "plan_id": "5e4cda2cab725f3c60d46c2dae3740bd", "city": "\u66f9\u53bf", "province": "\u5c71\u4e1c\u7701", "path": "D:\\gongxueyun\\user_config.json", "is_repeat_clock_in": true, "is_submit_daily": true, "is_submit_weekly": true, "submit_weekly_time": 1}
