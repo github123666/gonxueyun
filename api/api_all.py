@@ -292,13 +292,15 @@ def submit_daily(user_login_info, daily, day):
 
 @repeat_api
 # submit month report
-def submit_month_report(user_login_info):
+def submit_month_report(user_login_info, date):
     url = 'practice/paper/v2/save'
-    data = {"yearmonth": "2023-12", "address": "", "t": "57e77d248294eca392dcda799b213cf9", "title": "12月的月报",
+    data = {"yearmonth": "2023-12", "address": "", "t": aes_encrypt(int(time.time() * 1000)), "title": f"{}月的月报",
             "longitude": "0.0", "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "month",
             "content": "aaa"}
     # upada token
     headers['authorization'] = user_login_info.token
+    headers['sign'] = create_sign()
+    rsp = requests.post(basic_url + url, headers=headers)
 
 
 # check response

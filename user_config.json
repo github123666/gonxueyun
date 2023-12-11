@@ -1,16 +1,17 @@
 {
   "password": "li hua",
-  "phone": "111111111111111111",
+  "phone": "11111111111111",
   "address": "\u5c71\u4e1c\u83cf\u6cfd\u66f9\u53bf",
   "latitude": "34.830624",
   "longitude": "115.545005",
   "start_time": "11",
-  "end_time": "21", ,
+  "end_time": "15",
   "city": "\u66f9\u53bf",
   "province": "\u5c71\u4e1c\u7701",
-  "path": "D:\\gongxueyun\\user_config.json",
+  "path": "D:/gongxueyun\\user_config.json",
   "is_repeat_clock_in": true,
   "is_submit_daily": true,
   "is_submit_weekly": true,
-  "submit_weekly_time": 1
+  "submit_weekly_time": 1,
+  "submit_month_report_time": 1
 }
