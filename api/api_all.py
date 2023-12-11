@@ -300,7 +300,6 @@ def submit_month_report(user_login_info, date, month_report):
             "longitude": "0.0", "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "month",
             "content": month_report}
     # upada token
-    print(data)
     headers['authorization'] = user_login_info.token
     headers['sign'] = create_sign(user_login_info.user_id + "month" + user_login_info.plan_id + title)
     rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
