@@ -31,7 +31,7 @@
 "latitude": "34.830624",   \\ 纬度
 "longitude": "115.545005", \\ 经度
 "start_time": "08", \\ 打卡开始时间
-"end_time": "21",    \\ 打卡结束位置
+"end_time": "21",    \\ 打卡结束时间 注意是24小时时间
 "city": "菏泽市",
 "province": "山东省",
 "is_repeat_clock_in": false \\ 默认不补签
