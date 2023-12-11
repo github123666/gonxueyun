@@ -39,6 +39,7 @@
 "is_submit_weekly": false,\\ 默认不提交周报
 "submit_weekly_time": 1 \\ 星期几提交周报
 ```
+最后**运行main.py**
 
 ## **补签说明**：
 1. 默认补签前30天的数据(只能补签到前30天的)
