@@ -9,9 +9,9 @@
   "city": "\u66f9\u53bf",
   "province": "\u5c71\u4e1c\u7701",
   "path": "D:\\gongxueyun\\user_config.json",
-  "is_repeat_clock_in": true,
-  "is_submit_daily": true,
-  "is_submit_weekly": true,
+  "is_repeat_clock_in": false,
+  "is_submit_daily": false,
+  "is_submit_weekly": false,
   "submit_weekly_time": 1,
   "submit_month_report_time": 1
 }
