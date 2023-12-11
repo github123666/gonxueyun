@@ -33,6 +33,7 @@ class Info:
         self.is_submit_daily = login_info['is_submit_daily']
         self.is_submit_weekly = login_info['is_submit_weekly']
         self.submit_weekly_time = login_info['submit_weekly_time']
+        self.submit_month_report_time = login_info['submit_month_report_time']
 
     def __str__(self):
         return "user config"

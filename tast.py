@@ -1,3 +1,3 @@
-for i in 'af':
-    b =1
-print(b)
+a = {1,2,3}
+a.discard(3)
+print(a)

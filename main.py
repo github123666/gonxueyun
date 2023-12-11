@@ -35,6 +35,12 @@ def load_weekly_file() -> Weekly:
     return Weekly(weekly)
 
 
+# load local file
+def load_month_report():
+    with open(os.path.join(path, 'textFile/weekly.json'), 'r', encoding="UTf-8") as f:
+        pass
+
+
 # load login info
 def load_login_info() -> Info:
     with open(config_file, encoding="utf-8") as f:
@@ -132,6 +138,14 @@ def run():
                 main_module_log.error('已提交周报，不会重复提交')
     else:
         main_module_log.info("未到提交周报时间")
+    # submit month report
+    day = int(time.strftime("%d", time.localtime()))
+    if day == user_login_info.submit_month_report_time:
+        main_module_log.info("开始提交月报")
+        main_module_log.info('读取月报内容.....')
+        pass
+    else:
+        main_module_log.info("未到提交月报时间")
 
 
 if __name__ == '__main__':

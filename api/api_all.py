@@ -215,6 +215,9 @@ def get_attendance_log(user_login_info):
     save_token(user_login_info)
     # handle response text
     day_set = count_day(dict(rsp))
+    # remove now clock in log
+    day_set.discard(int(time.strftime("%d", time.localtime())))
+    # no clock in day
     empty_day = day_set ^ set(range(1, now_day))
     # repeat clock in
     api_module_log.info("本月补签阻塞3~15秒后打卡")
@@ -287,9 +290,15 @@ def submit_daily(user_login_info, daily, day):
     special_code(handle_response, rsp)
 
 
+@repeat_api
 # submit month report
 def submit_month_report(user_login_info):
-    pass
+    url = 'practice/paper/v2/save'
+    data = {"yearmonth": "2023-12", "address": "", "t": "57e77d248294eca392dcda799b213cf9", "title": "12月的月报",
+            "longitude": "0.0", "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "month",
+            "content": "aaa"}
+    # upada token
+    headers['authorization'] = user_login_info.token
 
 
 # check response
