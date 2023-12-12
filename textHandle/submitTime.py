@@ -16,4 +16,4 @@ class SubmitTime:
 
     def to_save_local(self):
         with open(self.path, 'w', encoding="UTF-8") as f:
-            f.write(str(self.__dict__))
+            f.write(json.dumps(self.__dict__))

@@ -30,10 +30,25 @@ headers = {
 # basic url
 basic_url = "https://api.moguding.net:9000/"
 
+# proxy
+li_hua = requests.Session()
+li_hua.proxies = {
+    # 配置你的代理,建议验证代理是否可用
+    # "http": "http://117.160.250.163:8828",
+    # "https": "http://10.10.1.10:1080",
+}
+
 
 # save token
 def save_token(user_login_info):
     user_login_info.to_save_local(user_login_info.__dict__)
+
+
+# special case
+def special_code(func, response):
+    if response['code'] == 500:
+        response['code'] = 200
+    func(response)
 
 
 # repeat
@@ -50,7 +65,7 @@ def repeat_api(func):
             # save token
             save_token(*args)
             return func(*args, **kwargs)
-        except requests.exceptions.SSLError as r:
+        except requests.exceptions.SSLError:
             api_module_log.error('请关闭代理,或当前ip已经被deny(拉黑了)')
             api_module_log.info("程序已退出")
             exit(-1)
@@ -65,10 +80,11 @@ def get_token_userid(user_info):
     data = {"password": aes_encrypt(user_info.password), "loginType": "android",
             "t": aes_encrypt(int(time.time() * 1000)), "uuid": "", "phone": aes_encrypt(user_info.phone)}
     try:
-        rsp = requests.post(headers=headers, url=basic_url + url, data=json.dumps(data)).json()
+        rsp = li_hua.post(headers=headers, url=basic_url + url, data=json.dumps(data)).json()
     except Exception as f:
         api_module_log.error(f)
         raise SimpleError("大概率ip被拉黑了(deny),当前环境可能存在问题(处于服务器上或开了代理,非国内代理)")
+    api_module_log.info(data)
     data = rsp['data']
     user_info.token = data["token"]
     user_info.user_id = data['userId']
@@ -84,7 +100,7 @@ def get_plan(user_login_info) -> None:
     headers['sign'] = create_sign(user_login_info.user_id, 'student')
     headers['authorization'] = user_login_info.token
     # return rsp
-    rsp = requests.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
     # check response
     handle_response(rsp)
     # response success
@@ -98,7 +114,6 @@ def clock_in(user_login_info) -> None:
     url = 'attendence/clock/v2/save'
     # judge clock in
     now = time.strftime('%H', time.localtime())
-    upload_type = "START"
     if now == user_login_info.start_time or now == user_login_info.end_time:
         upload_type = "START" if int(now) <= 12 else "END"
     else:
@@ -123,7 +138,7 @@ def clock_in(user_login_info) -> None:
     headers['sign'] = create_sign("Android", upload_type, user_login_info.plan_id, user_login_info.user_id,
                                   user_login_info.address)
     headers['authorization'] = user_login_info.token
-    rsp = requests.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
 
 
@@ -146,7 +161,7 @@ def repeat_clock_in(user_login_info, date):
             "type": "START"}
     headers['sign'] = create_sign("Android", "START", user_login_info.plan_id, user_login_info.user_id,
                                   user_login_info.address)
-    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
 
 
@@ -167,7 +182,7 @@ def get_previous_month_data(user_login_info):
         headers.pop('sign')
     # update token
     headers['authorization'] = user_login_info.token
-    rsp = requests.post(url=basic_url + url, headers=headers, data=json.dumps(previous_month_data)).json()
+    rsp = li_hua.post(url=basic_url + url, headers=headers, data=json.dumps(previous_month_data)).json()
     handle_response(rsp)
     # clock in count
     day_set = count_day(rsp)
@@ -202,12 +217,15 @@ def get_attendance_log(user_login_info):
     # update token
     headers['authorization'] = user_login_info.token
     api_module_log.info("获取本月考勤日期")
-    rsp = requests.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(url=basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
     # save token
     save_token(user_login_info)
     # handle response text
     day_set = count_day(dict(rsp))
+    # remove now clock in log
+    day_set.discard(int(time.strftime("%d", time.localtime())))
+    # no clock in day
     empty_day = day_set ^ set(range(1, now_day))
     # repeat clock in
     api_module_log.info("本月补签阻塞3~15秒后打卡")
@@ -228,7 +246,7 @@ def submit_log(user_login_info) -> dict:
     data = {"t": aes_encrypt(int(time.time() * 1000)), "planId": user_login_info.plan_id}
     # update token
     headers['authorization'] = user_login_info.token
-    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
     api_module_log.info("获取提交记录成功")
     return rsp['data']
@@ -240,7 +258,7 @@ def get_weeks_date(user_login_info) -> dict:
     data = {'planId': user_login_info.plan_id}
     headers['sign'] = ''
     headers['authorization'] = user_login_info.token
-    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
     api_module_log.info('获取一年内周报日期成功')
     return rsp
@@ -257,11 +275,13 @@ def submit_weekly(user_login_info, week, weekly):
             }
     headers['authorization'] = user_login_info.token
     headers['sign'] = create_sign(user_login_info.user_id, "week", user_login_info.plan_id, '周报')
-    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
-    handle_response(rsp)
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    # code equal 500 is allow
+    special_code(handle_response, rsp)
 
 
 @repeat_api
+# submit daily
 def submit_daily(user_login_info, daily, day):
     api_module_log.info('提交日报')
     url = 'practice/paper/v2/save'
@@ -273,7 +293,24 @@ def submit_daily(user_login_info, daily, day):
             "longitude": "0.0",
             "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "day",
             "content": daily.get_daily()['data']}
-    rsp = requests.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
+    # code equal 500 is allow
+    special_code(handle_response, rsp)
+
+
+@repeat_api
+# submit month report
+def submit_month_report(user_login_info, date, month_report):
+    url = 'practice/paper/v2/save'
+    title = f"{date.tm_mon}月的月报"
+    data = {"yearmonth": f"{date.tm_year}-{date.tm_mon}", "address": "", "t": aes_encrypt(int(time.time() * 1000)),
+            "title": title,
+            "longitude": "0.0", "latitude": "0.0", "planId": user_login_info.plan_id, "reportType": "month",
+            "content": month_report}
+    # upada token
+    headers['authorization'] = user_login_info.token
+    headers['sign'] = create_sign(user_login_info.user_id + "month" + user_login_info.plan_id + title)
+    rsp = li_hua.post(basic_url + url, headers=headers, data=json.dumps(data)).json()
     handle_response(rsp)
 
 
