@@ -1,15 +1,17 @@
 {
     "password": "li hua",
-    "phone": "1010101010010101",
-    "address": "山东菏泽市曹县蔡徐村",
+    "phone": "11111111111111111111111111111",
+    "address": "\u5c71\u4e1c\u83cf\u6cfd\u66f9\u53bf",
     "latitude": "34.830624",
     "longitude": "115.545005",
-    "start_time": "11",
+    "start_time": "09",
     "end_time": "21",
     "city": "\u66f9\u53bf",
     "province": "\u5c71\u4e1c\u7701",
+    "path": "C:\\Users\\haha\\Desktop\\test\\gonxueyun\\user_config.json",
     "is_repeat_clock_in": false,
     "is_submit_daily": false,
     "is_submit_weekly": false,
-    "submit_weekly_time": 1
+    "submit_weekly_time": 1,
+    "submit_month_report_time": 1
 }
