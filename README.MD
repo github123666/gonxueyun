@@ -60,7 +60,6 @@ li_hua.proxies = {
 "is_submit_weekly": false,\\ 默认不提交周报
 "submit_weekly_time": 1 ,\\ 星期几提交周报
 "submit_month_report_time": 1 \\ 每个月的几号提交月报,不要写28,29,30或31！！！
-
 ```
 
 **说明:**  
