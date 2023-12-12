@@ -163,3 +163,4 @@ def run():
 if __name__ == '__main__':
     main_module_log.info("开始")
     run()
+    main_module_log.info("运行结束")
