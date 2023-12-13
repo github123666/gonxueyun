@@ -26,8 +26,10 @@
 
 ## 部署
 
-1.google 云端硬盘可以部署 https://drive.google.com/drive/home
-教程更新中....
+1.google 云端硬盘可以部署 https://drive.google.com/drive/home  
+存在一定风险,应为是国外ip
+![img](./img/success.png)
+教程更新中....  
 
 ## 声明
 
