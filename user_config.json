@@ -1,6 +1,6 @@
 {
-  "password": "14yhl9TTt",
-  "phone": "13797424039",
+  "password": "111",
+  "phone": "1111",
   "address": "\u5c71\u4e1c\u83cf\u6cfd\u66f9\u53bf",
   "latitude": "34.830624",
   "longitude": "115.545005",
@@ -13,7 +13,7 @@
   "province": "\u5c71\u4e1c\u7701",
   "path": "D:\\gongxueyun\\user_config.json",
   "is_repeat_clock_in": false,
-  "is_submit_daily": true,
+  "is_submit_daily": false,
   "is_submit_weekly": false,
   "submit_weekly_time": 1,
   "submit_month_report_time": 1
