@@ -11,7 +11,7 @@ from textHandle.get_month_report import MonthReport
 from textHandle.get_weekly import Weekly
 from textHandle.handle_weeks_date import WeeksDate
 from textHandle.submitTime import SubmitTime
-from util.tomorrow import tomorrow_1_clock, next_week_submit_time,next_submit_month_time
+from util.tomorrow import tomorrow_1_clock, next_week_submit_time, next_submit_month_time
 
 # print log config
 logging.basicConfig(format="[%(asctime)s] %(name)s %(levelname)s: %(message)s", level=logging.INFO,
@@ -85,7 +85,7 @@ def run():
     # get plan_id
     plan_id(user_login_info)
     # get submit log
-    main_module_log.info('获取提交记录')
+    main_module_log.info('获取提交记录')  # 补签使用
     submit_all = submit_log(user_login_info)
     # clock in
     main_module_log.info("启动打卡")
