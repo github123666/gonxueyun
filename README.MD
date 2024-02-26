@@ -1,6 +1,8 @@
 ## 当前功能
 
 ## 有问题可以issues
+**2024-02-27**
++ 月报可选提交(之前写了,忘记加了)
 **2024-01-11**   
 新版gxy用的flutter写的，逆向起来有点麻烦。当前版本还能用懒得捣鼓了
 
@@ -78,7 +80,8 @@ li_hua.proxies = {
 "is_repeat_clock_in": false \\ 默认不补签
 "is_submit_daily": false, \\ 默认不提交日报
 "is_submit_weekly": false,\\ 默认不提交周报
-"submit_weekly_time": 1 ,\\ 星期几提交周报
+"is_submit_month_report": false, \\ 默认不提交月报
+"submit_weekly_time": 1 ,\\ 星期几提交周报 is_submit_weekly 为true时生效
 "submit_month_report_time": 1 \\ 每个月的几号提交月报,不要写28,29,30或31！！！
 ```
 

@@ -139,25 +139,27 @@ def run():
                 main_module_log.error('已提交周报，不会重复提交')
     else:
         main_module_log.info("未到提交周报时间")
-    # submit month report
-    date = time.localtime()
-    day = date.tm_mday
-    # is user set time
-    if day == user_login_info.submit_month_report_time:
-        # is submit month report
-        if submit_time.month_next_submit_Report == "" or int(time.time()) > submit_time.month_next_submit_Report:
-            main_module_log.info('读取月报内容.....')
-            month_report = load_month_report()
-            main_module_log.info("开始提交月报")
-            submit_month_report(user_login_info, date=date, month_report=month_report.get_month_report())
-            submit_time.month_next_submit_Report = next_submit_month_time()
-            # sava local file
-            submit_time.to_save_local()
-        else:
-            main_module_log.info('今天已提交月报,不在重复提交')
+    # is submit month report
+    if user_login_info.is_submit_month_report:
+        # submit month report
+        date = time.localtime()
+        day = date.tm_mday
+        # is user set time
+        if day == user_login_info.submit_month_report_time:
+            # is submit month report
+            if submit_time.month_next_submit_Report == "" or int(time.time()) > submit_time.month_next_submit_Report:
+                main_module_log.info('读取月报内容.....')
+                month_report = load_month_report()
+                main_module_log.info("开始提交月报")
+                submit_month_report(user_login_info, date=date, month_report=month_report.get_month_report())
+                submit_time.month_next_submit_Report = next_submit_month_time()
+                # sava local file
+                submit_time.to_save_local()
+            else:
+                main_module_log.info('今天已提交月报,不在重复提交')
 
-    else:
-        main_module_log.info("未到提交月报时间")
+        else:
+            main_module_log.info("未到提交月报时间")
 
 
 if __name__ == '__main__':
